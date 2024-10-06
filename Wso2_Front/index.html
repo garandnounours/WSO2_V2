@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FCI Faculty Officer Dashboard - NUST</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f2f5;
+        }
+        .dashboard {
+            opacity: 0;
+            animation: fadeIn 1s ease-in forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .header {
+            background-color: #003366;
+            color: white;
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+        }
+        .nav-link:hover {
+            background-color: #004080;
+        }
+        .section {
+            background-color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .section:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .btn {
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .response {
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard min-h-screen bg-gray-100">
+        <header class="header p-6 mb-8">
+            <div class="container mx-auto flex justify-between items-center">
+                <div class="flex items-center">
+                    <img src="images/logo-fci.png" alt="NUST Logo" class="w-22 h-12 mr-4">
+                    <div>
+                        <h1 class="text-3xl font-bold">FCI Faculty Officer Dashboard</h1>
+                        <p class="text-sm mt-2">Namibia University of Science and Technology</p>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <img src="images/julia.jpg" alt="Ms. Julia Semi" class="w-10 h-10 rounded-full mr-3">
+                    <div>
+                        <p class="font-semibold">Ms. Julia Semi</p>
+                        <p class="text-sm">Faculty of Computing and Informatics</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <nav class="bg-white shadow-md mb-8">
+            <div class="container mx-auto">
+                <ul class="flex justify-center space-x-4 p-4">
+                    <li><a href="#addCourse" class="nav-link px-4 py-2 rounded-full hover:bg-blue-100 text-blue-800">Add Course</a></li>
+                    <li><a href="#listCourses" class="nav-link px-4 py-2 rounded-full hover:bg-blue-100 text-blue-800">List Courses</a></li>
+                    <li><a href="#registerStudent" class="nav-link px-4 py-2 rounded-full hover:bg-blue-100 text-blue-800">Register Student</a></li>
+                    <li><a href="#registeredStudents" class="nav-link px-4 py-2 rounded-full hover:bg-blue-100 text-blue-800">Registered Students</a></li>
+                    <li><a href="#deregisterStudent" class="nav-link px-4 py-2 rounded-full hover:bg-blue-100 text-blue-800">Deregister Student</a></li>
+                    <li><a href="list_all.html" class="nav-link px-4 py-2 rounded-full hover:bg-blue-100 text-blue-800">All Courses</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <main class="container mx-auto px-4 py-8 space-y-8">
+            <section id="addCourse" class="section rounded-lg p-6" style="animation-delay: 0.1s;">
+                <h2 class="text-2xl font-semibold mb-4 text-blue-800">Add Course</h2>
+                <form id="addCourseForm" class="space-y-4">
+                    <input type="text" id="courseId" placeholder="Course ID" required class="w-full p-2 border rounded focus:ring focus:ring-blue-300">
+                    <input type="text" id="courseName" placeholder="Course Name" required class="w-full p-2 border rounded focus:ring focus:ring-blue-300">
+                    <input type="text" id="strand" placeholder="Strand" required class="w-full p-2 border rounded focus:ring focus:ring-blue-300">
+                    <input type="number" id="semester" placeholder="Semester" required class="w-full p-2 border rounded focus:ring focus:ring-blue-300">
+                    <button type="submit" class="btn bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">Add Course</button>
+                </form>
+                <div id="addCourseResponse" class="response mt-4 p-2 rounded"></div>
+            </section>
+
+            <section id="listCourses" class="section rounded-lg p-6" style="animation-delay: 0.2s;">
+                <h2 class="text-2xl font-semibold mb-4 text-blue-800">List Courses</h2>
+                <button id="fetchCourses" class="btn bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">Fetch Courses</button>
+                <ul id="courseList" class="mt-4 space-y-2"></ul>
+            </section>
+
+            <section id="registerStudent" class="section rounded-lg p-6" style="animation-delay: 0.3s;">
+                <h2 class="text-2xl font-semibold mb-4 text-blue-800">Register Student</h2>
+                <form id="registerStudentForm" class="space-y-4">
+                    <input type="text" id="studentId" placeholder="Student ID" required class="w-full p-2 border rounded focus:ring focus:ring-blue-300">
+                    <input type="text" id="studentName" placeholder="Student Name" required class="w-full p-2 border rounded focus:ring focus:ring-blue-300">
+                    <input type="text" id="registeredCourse" placeholder="Course ID" required class="w-full p-2 border rounded focus:ring focus:ring-blue-300">
+                    <button type="submit" class="btn bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50">Register Student</button>
+                </form>
+                <div id="registerResponse" class="response mt-4 p-2 rounded"></div>
+            </section>
+
+            <section id="registeredStudents" class="section rounded-lg p-6" style="animation-delay: 0.4s;">
+                <h2 class="text-2xl font-semibold mb-4 text-blue-800">Registered Students</h2>
+                <div class="flex space-x-4 mb-4">
+                    <input type="text" id="courseIdForStudents" placeholder="Enter Course ID" class="flex-grow p-2 border rounded focus:ring focus:ring-blue-300">
+                    <button id="fetchRegisteredStudents" class="btn bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-opacity-50">Get Registered Students</button>
+                </div>
+                <ul id="registeredStudentsList" class="mt-4 space-y-2"></ul>
+            </section>
+
+            <section id="deregisterStudent" class="section rounded-lg p-6" style="animation-delay: 0.5s;">
+                <h2 class="text-2xl font-semibold mb-4 text-blue-800">Deregister Student</h2>
+                <form id="deregisterStudentForm" class="space-y-4">
+                    <input type="text" id="deregisterStudentId" placeholder="Student ID" required class="w-full p-2 border rounded focus:ring focus:ring-blue-300">
+                    <input type="text" id="deregisterCourseId" placeholder="Course ID" required class="w-full p-2 border rounded focus:ring focus:ring-blue-300">
+                    <button type="submit" class="btn bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50">Deregister Student</button>
+                </form>
+                <div id="deregisterResponse" class="response mt-4 p-2 rounded"></div>
+            </section>
+        </main>
+
+        <footer class="bg-gray-800 text-white py-4 mt-8">
+            <div class="container mx-auto text-center">
+                <p>&copy; 2024 Namibia University of Science and Technology. All rights reserved.</p>
+                <p class="mt-2">
+                    <a href="https://www.nust.na" class="hover:underline" target="_blank">www.nust.na</a>
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const baseUrl = "http://localhost:8080/courses";
+
+        // Add Course
+        document.getElementById('addCourseForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const courseData = {
+                courseId: document.getElementById('courseId').value,
+                courseName: document.getElementById('courseName').value,
+                strand: document.getElementById('strand').value,
+                semester: parseInt(document.getElementById('semester').value, 10)
+            };
+            
+            fetch(`${baseUrl}/addCourse`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(courseData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: data.message,
+                });
+                document.getElementById('addCourseForm').reset();
+            })
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.message,
+                });
+            });
+        });
+
+        // List Courses
+        document.getElementById('fetchCourses').addEventListener('click', function() {
+            fetch(`${baseUrl}/listCourses`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const courseList = document.getElementById('courseList');
+                    courseList.innerHTML = '';
+                    if (data.length === 0) {
+                        courseList.innerHTML = '<li class="text-gray-500">No courses available</li>';
+                    } else {
+                        data.forEach(course => {
+                            const listItem = document.createElement('li');
+                            listItem.className = 'bg-white p-4 rounded shadow transition-all duration-300 hover:shadow-lg';
+                            listItem.innerHTML = `
+                                <div class="flex items-center">
+                                    <i class="fas fa-book text-blue-500 mr-3 text-xl"></i>
+                                    <div>
+                                        <strong class="text-lg">${course.courseId}: ${course.courseName}</strong>
+                                        <p class="text-sm text-gray-600">Strand: ${course.strand}, Semester: ${course.semester}</p>
+                                    </div>
+                                </div>
+                            `;
+                            courseList.appendChild(listItem);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching courses: ", error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to fetch courses',
+                    });
+                });
+        });
+
+        // Register Student
+        document.getElementById('registerStudentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const studentData = {
+                studentId: document.getElementById('studentId').value,
+                name: document.getElementById('studentName').value,
+                registeredCourses: [document.getElementById('registeredCourse').value]
+            };
+            
+            fetch(`${baseUrl}/registerStudent`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(studentData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: data.message,
+                });
+                document.getElementById('registerStudentForm').reset();
+            })
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.message,
+                });
+            });
+        });
+
+        // Get Registered Students
+        document.getElementById('fetchRegisteredStudents').addEventListener('click', function() {
+            const courseId = document.getElementById('courseIdForStudents').value;
+            
+            fetch(`${baseUrl}/registeredStudents/${courseId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const registeredStudentsList = document.getElementById('registeredStudentsList');
+                    registeredStudentsList.innerHTML = '';
+                    if (data.length === 0) {
+                        registeredStudentsList.innerHTML = '<li class="text-gray-500">No students registered for this course</li>';
+                    } else {
+                        data.forEach(student => {
+                            const listItem = document.createElement('li');
+                            listItem.className = 'bg-white p-4 rounded shadow transition-all duration-300 hover:shadow-lg';
+                            listItem.innerHTML = `
+                                <div class="flex items-center">
+                                    <i class="fas fa-user-graduate text-purple-500 mr-3 text-xl"></i>
+                                    <div>
+                                        <strong class="text-lg">${student.studentId}: ${student.name}</strong>
+                                    </div>
+                                </div>
+                            `;
+                            registeredStudentsList.appendChild(listItem);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching registered students: ", error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to fetch registered students',
+                    });
+                });
+        });
+
+        // Deregister Student
+        document.getElementById('deregisterStudentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const studentId = document.getElementById('deregisterStudentId').value;
+            const courseId = document.getElementById('deregisterCourseId').value;
+            
+            fetch(`${baseUrl}/deregisterStudent/${studentId}/${courseId}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: data.message,
+                });
+                document.getElementById('deregisterStudentForm').reset();
+            })
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.message,
+                });
+            });
+        });
+    </script>
+</body>
+</html>

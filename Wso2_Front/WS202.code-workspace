@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "../WS202_Back"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "Wso2_Front"
+	}
+}
