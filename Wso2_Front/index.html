@@ -108,6 +108,18 @@
             <section id="listCourses" class="section rounded-lg p-6" style="animation-delay: 0.2s;">
                 <h2 class="text-2xl font-semibold mb-4 text-blue-800">List Courses</h2>
                 <button id="fetchCourses" class="btn bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">Fetch Courses</button>
+                <div id="semesterFilter" class="mt-4 hidden">
+                    <label for="semesterSelect" class="block text-sm font-medium text-gray-700 mb-2">Filter by Semester:</label>
+                    <select id="semesterSelect" class="w-full p-2 border rounded focus:ring focus:ring-blue-300">
+                        <option value="">All Semesters</option>
+                        <option value="1">Semester 1</option>
+                        <option value="2">Semester 2</option>
+                        <option value="3">Semester 3</option>
+                        <option value="4">Semester 4</option>
+                        <option value="5">Semester 5</option>
+                        <option value="6">Semester 6</option>
+                    </select>
+                </div>
                 <ul id="courseList" class="mt-4 space-y-2"></ul>
             </section>
 
@@ -155,6 +167,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         const baseUrl = "http://localhost:8080/courses";
+        let allCourses = [];
 
         // Add Course
         document.getElementById('addCourseForm').addEventListener('submit', function(e) {
@@ -206,26 +219,9 @@
                     return response.json();
                 })
                 .then(data => {
-                    const courseList = document.getElementById('courseList');
-                    courseList.innerHTML = '';
-                    if (data.length === 0) {
-                        courseList.innerHTML = '<li class="text-gray-500">No courses available</li>';
-                    } else {
-                        data.forEach(course => {
-                            const listItem = document.createElement('li');
-                            listItem.className = 'bg-white p-4 rounded shadow transition-all duration-300 hover:shadow-lg';
-                            listItem.innerHTML = `
-                                <div class="flex items-center">
-                                    <i class="fas fa-book text-blue-500 mr-3 text-xl"></i>
-                                    <div>
-                                        <strong class="text-lg">${course.courseId}: ${course.courseName}</strong>
-                                        <p class="text-sm text-gray-600">Strand: ${course.strand}, Semester: ${course.semester}</p>
-                                    </div>
-                                </div>
-                            `;
-                            courseList.appendChild(listItem);
-                        });
-                    }
+                    allCourses = data;
+                    displayCourses(allCourses);
+                    document.getElementById('semesterFilter').classList.remove('hidden');
                 })
                 .catch(error => {
                     console.error("Error fetching courses: ", error);
@@ -236,6 +232,40 @@
                     });
                 });
         });
+
+        // Filter courses by semester
+        document.getElementById('semesterSelect').addEventListener('change', function() {
+            const selectedSemester = this.value;
+            if (selectedSemester === "") {
+                displayCourses(allCourses);
+            } else {
+                const filteredCourses = allCourses.filter(course => course.semester.toString() === selectedSemester);
+                displayCourses(filteredCourses);
+            }
+        });
+
+        function displayCourses(courses) {
+            const courseList = document.getElementById('courseList');
+            courseList.innerHTML = '';
+            if (courses.length === 0) {
+                courseList.innerHTML = '<li class="text-gray-500">No courses available</li>';
+            } else {
+                courses.forEach(course => {
+                    const listItem = document.createElement('li');
+                    listItem.className = 'bg-white p-4 rounded shadow transition-all duration-300 hover:shadow-lg';
+                    listItem.innerHTML = `
+                        <div class="flex items-center">
+                            <i class="fas fa-book text-blue-500 mr-3 text-xl"></i>
+                            <div>
+                                <strong class="text-lg">${course.courseId}: ${course.courseName}</strong>
+                                <p class="text-sm text-gray-600">Strand: ${course.strand}, Semester: ${course.semester}</p>
+                            </div>
+                        </div>
+                    `;
+                    courseList.appendChild(listItem);
+                });
+            }
+        }
 
         // Register Student
         document.getElementById('registerStudentForm').addEventListener('submit', function(e) {
