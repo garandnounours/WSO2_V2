@@ -160,10 +160,18 @@
                     <h3 class="text-xl font-semibold mb-2">${course.courseId}: ${course.courseName}</h3>
                     <p class="text-gray-600 mb-2">Strand: ${course.strand}, Semester: ${course.semester}</p>
                     <p class="mb-2">Number of registered students: <span id="student-count-${course.courseId}" class="font-semibold">Loading...</span></p>
+                    <div class="mb-2">
+                        <input type="text" id="studentSearch-${course.courseId}" placeholder="Search by Student Number" class="w-full p-2 border rounded-lg focus:ring focus:ring-blue-300">
+                    </div>
                     <div id="students-${course.courseId}" class="mt-4 space-y-2"></div>
                 `;
                 container.appendChild(courseDiv);
                 loadRegisteredStudents(course.courseId);
+
+                // Add event listener for student search
+                document.getElementById(`studentSearch-${course.courseId}`).addEventListener('input', (e) => {
+                    filterStudents(course.courseId, e.target.value);
+                });
             });
         }
 
@@ -179,19 +187,41 @@
                 studentCountSpan.innerText = students.length;
 
                 students.forEach(student => {
-                    const studentDiv = document.createElement('div');
-                    studentDiv.classList.add('flex', 'justify-between', 'items-center', 'bg-gray-100', 'p-2', 'rounded');
-                    studentDiv.innerHTML = `
-                        <span>${student.studentId}: ${student.name}</span>
-                        <button onclick="deregisterStudent('${student.studentId}', '${courseId}')" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition duration-300">
-                            <i class="fas fa-user-minus mr-1"></i>Deregister
-                        </button>
-                    `;
+                    const studentDiv = createStudentDiv(student, courseId);
                     studentsContainer.appendChild(studentDiv);
                 });
+
+                // Store students data for filtering
+                studentsContainer.dataset.students = JSON.stringify(students);
             } catch (error) {
                 console.error('Error loading registered students:', error);
             }
+        }
+
+        function createStudentDiv(student, courseId) {
+            const studentDiv = document.createElement('div');
+            studentDiv.classList.add('flex', 'justify-between', 'items-center', 'bg-gray-100', 'p-2', 'rounded');
+            studentDiv.innerHTML = `
+                <span>${student.studentId}: ${student.name}</span>
+                <button onclick="deregisterStudent('${student.studentId}', '${courseId}')" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition duration-300">
+                    <i class="fas fa-user-minus mr-1"></i>Deregister
+                </button>
+            `;
+            return studentDiv;
+        }
+
+        function filterStudents(courseId, searchTerm) {
+            const studentsContainer = document.getElementById(`students-${courseId}`);
+            const students = JSON.parse(studentsContainer.dataset.students);
+            const filteredStudents = students.filter(student => 
+                student.studentId.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+
+            studentsContainer.innerHTML = '';
+            filteredStudents.forEach(student => {
+                const studentDiv = createStudentDiv(student, courseId);
+                studentsContainer.appendChild(studentDiv);
+            });
         }
 
         async function deregisterStudent(studentId, courseId) {
